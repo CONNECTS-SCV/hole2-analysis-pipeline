@@ -1,0 +1,52 @@
+# 필수 설정
+# ----------
+pdb_file: "examples/01_gramicidin_1grm/1grm_single.pdb"  # PDB 파일 경로
+output_prefix: "my_analysis"                              # 출력 파일 접두사
+
+# 반지름 파일 설정
+# ----------------
+# 사용 가능한 옵션:
+#   - simple.rad      (추천, AMBER force field)
+#   - amberuni.rad    (AMBER unified atom)
+#   - bondi.rad       (Bondi radii)
+#   - hardcore.rad    (작은 반지름, 더 넓은 기공)
+#   - xplor.rad       (XPLOR/CNS)
+radius_file: "simple.rad"
+
+# 채널 종료 반지름 (Angstrom)
+# ---------------------------
+# 값 선택 가이드:
+#   - 좁은 이온 채널: 5.0
+#   - 넓은 채널: 10.0 ~ 15.0
+#   - 중간 크기: 7.0 ~ 8.0
+endrad: 5.0
+
+# 작업 디렉토리
+# -------------
+work_dir: "output"
+
+# 선택 설정 (필요시 주석 해제)
+# -----------------------------
+
+# 채널 방향 벡터 (X, Y, Z)
+# 자동 탐지가 실패할 때만 사용
+# cvect: [0.0, 0.0, 1.0]  # Z축 방향
+
+# 채널 시작점 좌표 (X, Y, Z)
+# 자동 탐지가 실패할 때만 사용
+# cpoint: [10.0, 20.0, 30.0]
+
+# 샘플링 간격 (Angstrom)
+# 작을수록 정밀하지만 느림
+# sample: 0.125
+
+# 무시할 잔기 목록 (기본값: 물과 이온 무시)
+# HOLE 실행 시 자동으로 적용됩니다
+ignore:
+  - HOH    # 물
+  - SOL    # 용매
+  - NA     # 나트륨 이온
+  - K      # 칼륨 이온
+  - CL     # 염소 이온
+  - CA     # 칼슘 이온
+  - MG     # 마그네슘 이온
