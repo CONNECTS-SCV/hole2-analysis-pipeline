@@ -461,12 +461,12 @@ def run_full_analysis(pdb_file, output_prefix="analysis", endrad=5.0,
 
             # 1단계: Surface + Pore 렌더링
             print("  1/3: Surface + Pore 레이어 렌더링...")
-            # set_view로 절대 카메라 위치 설정 (Z축 수직: +Z=위, -Z=아래)
-            view_matrix = "set_view (1.000, 0.000, 0.000, 0.000, 0.000, 1.000, 0.000, -1.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -100.0, 100.0, -20.0)"
+            # set_view로 절대 카메라 위치 설정 (Z축 수직: +Z=아래, -Z=위)
+            view_matrix = "set_view (1.000, 0.000, 0.000, 0.000, 0.000, -1.000, 0.000, 1.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -100.0, 100.0, -20.0)"
             pymol_cmd_surface = [
                 'pymol',
                 '-c',
-                '-d', f"@{pml_script_abs}; hide everything, protein_cartoon; set transparency, 0.6, protein_surface; {view_matrix}; zoom all, 20; ray 800, 800; png {surface_pore_png}, dpi=200; quit"
+                '-d', f"@{pml_script_abs}; hide everything, protein_cartoon; hide spheres, pore; show surface, pore; set surface_quality, 1, pore; set transparency, 0.6, protein_surface; {view_matrix}; zoom all, 20; ray 800, 800; png {surface_pore_png}, dpi=200; quit"
             ]
 
             proc1 = subprocess.run(
@@ -672,8 +672,8 @@ if __name__ == "__main__":
         work_dir = config.get('work_dir', 'output')
         radius_file = config.get('radius_file')
         ignore_residues = config.get('ignore')
-        cvect = config.get('cvect')  # 채널 방향 벡터
-        cpoint = config.get('cpoint')  # 채널 시작점
+        cvect = [0.0, 0.0, 1.0]  # 채널 방향 벡터 (Z축 고정)
+        cpoint = None  # 채널 시작점 (자동 탐지 사용)
 
         # output_prefix 자동 생성 (지정되지 않은 경우 PDB 파일명 사용)
         output_prefix = config.get('output_prefix')

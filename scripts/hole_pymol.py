@@ -433,8 +433,8 @@ color grey70, protein_surface
 # 3. 기공 표면 로드
 load {pore_pdb_abs}, pore
 hide everything, pore
-show surface, pore
-set surface_quality, 1, pore
+show spheres, pore
+set sphere_scale, 0.25, pore
 
 """
 
@@ -488,7 +488,7 @@ print("  BLUE   - Wide pore (> 2.30 Å)")
 print("  YELLOW - Center line")
 """
     else:
-        script += 'print("Pore surface: cyan spheres (scale 0.25)")\n'
+        script += 'print("Pore surface: cyan (sphere scale 0.25)")\n'
 
     with open(output_script, 'w') as f:
         f.write(script)
