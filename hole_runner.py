@@ -117,25 +117,46 @@ endrad {endrad}
     with open(input_file, 'w') as f:
         f.write(input_content)
 
-    # 입력 PDB 파일 복사 및 DUM 원자 제거
+    # 입력 PDB 파일 복사 및 불필요한 원자 제거
     import shutil
 
-    # DUM 원자 제거
-    dum_removed = False
+    # 제거할 원자/잔기 목록 (기본값 + yml 설정에서 지정한 ignore 목록)
+    # ignore_residues에 YAML의 ignore 목록이 들어옵니다
+    remove_set = set(['DUM'])  # 기본적으로 DUM은 항상 제거
+    remove_all_hetatm = False  # HETATM 전체 제거 플래그
+
+    if ignore_residues:
+        # HETATM 특수 키워드 확인
+        if 'HETATM' in ignore_residues:
+            remove_all_hetatm = True
+            ignore_residues = [r for r in ignore_residues if r != 'HETATM']
+        remove_set.update(ignore_residues)
+
+    removed_types = set()
+    hetatm_count = 0
     with open(pdb_path, 'r') as f_in, open(pdb_copy, 'w') as f_out:
         for line in f_in:
-            # ATOM 또는 HETATM 라인에서 DUM 원자 제거
+            # HETATM 전체 제거 옵션이 활성화된 경우
+            if remove_all_hetatm and line.startswith('HETATM'):
+                hetatm_count += 1
+                continue
+
+            # ATOM 또는 HETATM 라인에서 특정 원자 제거
             if line.startswith(('ATOM', 'HETATM')):
                 atom_name = line[12:16].strip()
                 res_name = line[17:20].strip()
-                # DUM 원자 또는 DUM 잔기 스킵
-                if atom_name == 'DUM' or res_name == 'DUM':
-                    dum_removed = True
+                # 제거할 원자/잔기 스킵 (residue name만 체크)
+                # atom_name은 CA(알파 탄소) 등 단백질 구조 원자와 충돌할 수 있으므로 제외
+                if res_name in remove_set:
+                    removed_types.add(res_name)
                     continue
             f_out.write(line)
 
-    if dum_removed:
-        print(f"  Warning: DUM 원자가 제거되었습니다.")
+    # 제거 정보 출력
+    if remove_all_hetatm and hetatm_count > 0:
+        print(f"  Warning: 모든 HETATM 라인 제거됨 ({hetatm_count}개)")
+    if removed_types:
+        print(f"  Warning: {len(removed_types)}종 원자/잔기 제거됨: {', '.join(sorted(removed_types))}")
 
     # HOLE 실행
     try:
@@ -630,10 +651,17 @@ if __name__ == "__main__":
 
         # YAML에서 파라미터 읽기
         pdb_file = config.get('pdb_file')
-        output_prefix = config.get('output_prefix', 'analysis')
         endrad = config.get('endrad', 5.0)
         work_dir = config.get('work_dir', 'output')
         radius_file = config.get('radius_file')
+
+        # output_prefix 자동 생성 (지정되지 않은 경우 PDB 파일명 사용)
+        output_prefix = config.get('output_prefix')
+        if not output_prefix:
+            from pathlib import Path
+            # PDB 파일명에서 확장자 제거하여 prefix로 사용
+            output_prefix = Path(pdb_file).stem
+            print(f"output_prefix 미지정 → 자동 설정: {output_prefix}")
 
         # radius_file이 상대 경로면 절대 경로로 변환
         if radius_file and not radius_file.startswith('/'):

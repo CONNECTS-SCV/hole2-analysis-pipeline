@@ -1,7 +1,7 @@
 # 필수 설정
 # ----------
-pdb_file: "examples/01_gramicidin_1grm/1grm_single.pdb"  # PDB 파일 경로
-output_prefix: "my_analysis"                              # 출력 파일 접두사
+pdb_file: "test_proteins/opm_3j9p_glic.pdb"  # PDB 파일 경로
+# output_prefix: "my_analysis"  # 출력 파일 접두사 (생략시 PDB 파일명 사용)
 
 # 반지름 파일 설정
 # ----------------
@@ -19,7 +19,7 @@ radius_file: "simple.rad"
 #   - 좁은 이온 채널: 5.0
 #   - 넓은 채널: 10.0 ~ 15.0
 #   - 중간 크기: 7.0 ~ 8.0
-endrad: 5.0
+endrad: 10.0
 
 # 작업 디렉토리
 # -------------
@@ -40,8 +40,10 @@ work_dir: "output"
 # 작을수록 정밀하지만 느림
 # sample: 0.125
 
-# 무시할 잔기 목록 (기본값: 물과 이온 무시)
-# HOLE 실행 시 자동으로 적용됩니다
+# 무시할 잔기 목록 (PDB 파일에서 제거됨)
+# 채널 분석과 무관한 원자/잔기들을 지정
+# 특수 키워드:
+#   - HETATM : 모든 HETATM 라인 제거 (ATOM만 유지)
 ignore:
   - HOH    # 물
   - SOL    # 용매
@@ -50,3 +52,9 @@ ignore:
   - CL     # 염소 이온
   - CA     # 칼슘 이온
   - MG     # 마그네슘 이온
+  - DUM    # 더미 원자
+  - AU     # 금 (heavy metal marker)
+  - U      # 우라늄 (heavy metal marker)
+  - HG     # 수은 (heavy metal marker)
+  - PT     # 백금 (heavy metal marker)
+  # - HETATM  # 주석 해제시 모든 HETATM 제거
