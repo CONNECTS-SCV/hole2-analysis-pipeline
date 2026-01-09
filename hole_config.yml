@@ -1,6 +1,6 @@
 # 필수 설정
 # ----------
-pdb_file: "test_proteins/opm_3j9p_glic.pdb"  # PDB 파일 경로
+pdb_file: "test_proteins/opm_3kg2_aquaporin.pdb"  # PDB 파일 경로
 # output_prefix: "my_analysis"  # 출력 파일 접두사 (생략시 PDB 파일명 사용)
 
 # 반지름 파일 설정
@@ -19,7 +19,7 @@ radius_file: "simple.rad"
 #   - 좁은 이온 채널: 5.0
 #   - 넓은 채널: 10.0 ~ 15.0
 #   - 중간 크기: 7.0 ~ 8.0
-endrad: 10.0
+endrad: 5.0
 
 # 작업 디렉토리
 # -------------
@@ -29,8 +29,8 @@ work_dir: "output"
 # -----------------------------
 
 # 채널 방향 벡터 (X, Y, Z)
-# 자동 탐지가 실패할 때만 사용
-# cvect: [0.0, 0.0, 1.0]  # Z축 방향
+# Z축 방향으로 고정 (수직선)
+cvect: [0.0, 0.0, 1.0]  # Z축 방향
 
 # 채널 시작점 좌표 (X, Y, Z)
 # 자동 탐지가 실패할 때만 사용
@@ -57,4 +57,4 @@ ignore:
   - U      # 우라늄 (heavy metal marker)
   - HG     # 수은 (heavy metal marker)
   - PT     # 백금 (heavy metal marker)
-  # - HETATM  # 주석 해제시 모든 HETATM 제거
+  - HETATM  # 주석 해제시 모든 HETATM 제거

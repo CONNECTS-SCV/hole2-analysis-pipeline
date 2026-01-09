@@ -131,12 +131,14 @@ def parse_sph_file(sph_file):
     with open(sph_file, 'r') as f:
         for line in f:
             if line.startswith('ATOM'):
-                parts = line.split()
-                if len(parts) >= 9:
-                    x = float(parts[5])
-                    y = float(parts[6])
-                    z = float(parts[7])
-                    radius = float(parts[8])
+                # PDB 포맷은 고정 폭 컬럼 사용 (공백이 없을 수 있음)
+                # ATOM     ID  NAME RES C RESID    X       Y       Z       R1      R2
+                # 컬럼 위치: 30-38 (X), 38-46 (Y), 46-54 (Z), 54-60 (R1)
+                try:
+                    x = float(line[30:38].strip())
+                    y = float(line[38:46].strip())
+                    z = float(line[46:54].strip())
+                    radius = float(line[54:60].strip())
 
                     # 유효한 반경만 포함 (양수 && 합리적인 범위)
                     if 0 < radius < 50:
@@ -144,6 +146,9 @@ def parse_sph_file(sph_file):
                             'coords': (x, y, z),
                             'radius': radius
                         })
+                except (ValueError, IndexError):
+                    # 파싱 실패한 라인은 건너뛰기
+                    continue
 
     return channel_points
 
@@ -428,8 +433,8 @@ color grey70, protein_surface
 # 3. 기공 표면 로드
 load {pore_pdb_abs}, pore
 hide everything, pore
-show spheres, pore
-set sphere_scale, 0.25, pore
+show surface, pore
+set surface_quality, 1, pore
 
 """
 
